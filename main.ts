@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 const LINE =
@@ -6,4 +6,12 @@ const LINE =
 
 const outputDir = process.env.OUTPUT_DIR ?? "/output";
 mkdirSync(outputDir, { recursive: true });
-writeFileSync(join(outputDir, "entry.txt"), LINE, { encoding: "utf8" });
+const entryPath = join(outputDir, "entry.txt");
+writeFileSync(entryPath, LINE, { encoding: "utf8" });
+
+// Verify after write: read the file back and assert it matches exactly.
+const written = readFileSync(entryPath, { encoding: "utf8" });
+if (written !== LINE) {
+  console.error("Verification failed: entry.txt content does not match the expected line.");
+  process.exit(1);
+}
